@@ -1,7 +1,7 @@
 Projet non-réalisé de ma formation chez BeCode, je décide aujourd'hui, purement pour le fun, de retoucher à ça.
 Voici un copier-coller des consignes.
 
-"Pew-pew is a shooting game made in javascript(canvas).
+Pew-pew is a shooting game made in javascript(canvas).
 
 ## The elements
 
@@ -29,4 +29,4 @@ To make this game, you need :
 - A table showing the latest scores
 - Rank the scores in order from highest to lowest
 
-![PewPew](./mandalorian.gif)"
+![PewPew](./mandalorian.gif)
