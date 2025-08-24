@@ -9,29 +9,62 @@ const canvasWidth = c.width;
 const canvasHeight = c.height;
 
 let playerX = canvasWidth / 2 - 25;
+let bullets: Array<{ x: number; y: number; hit?: boolean }> = [];
+let enemyPosition = Math.min(
+  Math.floor(Math.random() * canvasWidth),
+  canvasWidth - 50
+);
+let score = 0;
 
-let bullets: Array<{ x: number; y: number }> = [];
+const checkCollision = (bullet: { x: number; y: number; hit?: boolean }) => {
+  const bulletWidth = 10;
+  const bulletHeight = 20;
+  const enemyWidth = 50;
+  const enemyHeight = 40;
+
+  return (
+    bullet.x < enemyPosition + enemyWidth &&
+    bullet.x + bulletWidth > enemyPosition &&
+    bullet.y < 50 + enemyHeight &&
+    bullet.y + bulletHeight > 50
+  );
+};
 
 const drawGame = () => {
   if (ctx) {
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     drawPlayer(ctx, playerX, canvasHeight);
-    drawEnemy(ctx, 200, 200);
+    drawEnemy(ctx, enemyPosition, 50);
     bullets.forEach((bulletData) => {
       drawBullet(ctx, bulletData.x, bulletData.y);
     });
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "green";
+    ctx.fillText(`Score: ${score}/10`, 10, 30);
   }
 };
 
 const updateBullets = () => {
-  bullets.forEach((bullet) => (bullet.y -= 5));
+  bullets.forEach((bullet) => {
+    bullet.y -= 20;
 
-  bullets = bullets.filter((bullet) => bullet.y > -20);
+    if (checkCollision(bullet)) {
+      score += 1;
+      bullet.hit = true;
+      enemyPosition = Math.min(
+        Math.floor(Math.random() * canvasWidth),
+        canvasWidth - 50
+      );
+    }
+  });
+
+  // Supprimer bullets qui sortent de l'écran OU qui ont touché l'ennemi
+  bullets = bullets.filter((bullet) => bullet.y > -20 && !(bullet as any).hit);
 };
 
 document.addEventListener("keydown", (event) => {
-  const speed = 25;
+  const speed = 35;
 
   if (event.key === "ArrowLeft" && playerX > 0) {
     playerX -= speed;
@@ -47,7 +80,17 @@ document.addEventListener("keydown", (event) => {
   drawGame();
 });
 
-setInterval(() => {
+const gameInterval = setInterval(() => {
+  if (score >= 10) {
+    clearInterval(gameInterval);
+    if (ctx) {
+      ctx.fillStyle = "green";
+      ctx.font = "48px Arial";
+      ctx.fillText("VICTOIRE !", canvasWidth / 2 - 100, canvasHeight / 2);
+    }
+    return;
+  }
+
   updateBullets();
   drawGame();
 }, 16);
